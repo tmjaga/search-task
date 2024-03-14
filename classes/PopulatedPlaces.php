@@ -25,10 +25,13 @@ class PopulatedPlaces
 	public function getAll($params)
 	{
         $pageNumber = 1;
-        if (isset($params['page'])) {
+        if (isset($params['page']) && preg_match('/^[0-9]+$/', $params['page'])) {
             $pageNumber = $params['page'];
             unset($params['page']);
         }
+
+        // remove fields from $params which is not in $this->fieldMappings array
+        $params = array_intersect_key($params, $this->fieldMappings);
 
         $placeHolders = array_map(function ($key) {
             $separator = in_array($key, $this->likeSearchFields) ? ' LIKE :' : ' = :';
